@@ -10,10 +10,14 @@
     "version": "1.0.0",
     "scripts": {
         "dev": "bun .",
+        "load-commands": "bun run src/util/loadCommands.ts",
+        "delete-commands": "bun run src/util/deleteCommands.ts",
         "docker:build": "docker-compose build",
         "docker:up": "docker-compose up -d",
         "docker:down": "docker-compose down",
-        "docker:restart": "docker-compose restart bot"
+        "docker:restart": "docker-compose restart bot",
+        "docker:load-commands": "docker-compose run --rm bot load-commands",
+        "docker:delete-commands": "docker-compose run --rm bot delete-commands"
     },
     "devDependencies": {
         "@types/bun": "latest",

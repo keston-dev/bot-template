@@ -1,10 +1,4 @@
-import {
-    ApplicationCommandType,
-    Client,
-    type ClientOptions,
-    Collection,
-    type RESTPostAPIApplicationCommandsJSONBody,
-} from 'discord.js';
+import { Client, type ClientOptions, Collection } from 'discord.js';
 import { type ClientConfig, clientConfig } from '../types/clientConfig';
 import { dirname, join } from 'path';
 
@@ -204,84 +198,6 @@ export class ExtendedClient extends Client {
             this.logger.error(
                 'Failed to read events directory:',
                 error,
-            );
-        }
-    }
-
-    /**
-     * A helper method to build JSON body data to send to discord to load our commands.
-     */
-    private buildCommandData() {
-        return Array.from(this.commands.values()).map(
-            (cmd): RESTPostAPIApplicationCommandsJSONBody => {
-                switch (cmd.data.type) {
-                    case ApplicationCommandType.ChatInput:
-                        return {
-                            name: cmd.data.name,
-                            type: ApplicationCommandType.ChatInput,
-                            description: cmd.data.description,
-                            //@ts-expect-error DJS errors from minimumPermissionLevel, which will be ignored when pushed.
-                            options: cmd.data.options ?? [],
-                            contexts: cmd.data.contexts,
-                            integration_types: cmd.data.integration,
-                        };
-
-                    case ApplicationCommandType.User:
-                        return {
-                            name: cmd.data.name,
-                            type: ApplicationCommandType.User,
-                        };
-
-                    case ApplicationCommandType.Message:
-                        return {
-                            name: cmd.data.name,
-                            type: ApplicationCommandType.Message,
-                        };
-
-                    default:
-                        throw new Error(
-                            `Unknown command type: ${cmd.data.type}`,
-                        );
-                }
-            },
-        );
-    }
-
-    /**
-     * A method to send commands to discord, either globally or per-guild.
-     * @param registerTo - Either `guild` or `global`, based on process.env.NODE_ENV.
-     */
-    public async registerCommands(registerTo: 'guild' | 'global') {
-        let commandData = this.buildCommandData();
-        if (registerTo === 'global') {
-            try {
-                this.logger.info(commandData);
-                await this.application?.commands.set(commandData);
-                this.logger.info(`Registered global commands.`);
-            } catch (error) {
-                this.logger.error(
-                    `Failed to register global commands:\n${error}`,
-                );
-            }
-        } else {
-            await Promise.all(
-                this.guilds.cache.map(async (guild) => {
-                    try {
-                        await guild.commands.set(commandData);
-                        this.logger.info(
-                            `Registered guild commands in ${guild.name}`,
-                        );
-                    } catch (error: any) {
-                        if (error.code === 50001) {
-                            this.logger.error(
-                                null,
-                                `Missing access in ${guild.name} (${guild.id}) when setting commands.`,
-                            );
-                        } else {
-                            this.logger.error(error);
-                        }
-                    }
-                }),
             );
         }
     }
