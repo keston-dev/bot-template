@@ -38,8 +38,7 @@ async function loadCommands(
 
             if (!CommandClass) continue;
 
-            const mockClient = { config: {}, permissions: {} } as any;
-            const command: Command = new CommandClass(mockClient);
+            const command: Command = new CommandClass();
 
             const baseCommand = {
                 name: command.data.name,
