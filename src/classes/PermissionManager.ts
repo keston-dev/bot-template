@@ -25,7 +25,7 @@ export class PermissionManager {
     }
 
     /**
-     * A method to check the permissions of a user.
+     * Gets the permission level of the user.
      * @param message The message for the user to have its permissions checked on
      * @param member The member to check the permissions of
      * @returns `number` based on their permission level.
